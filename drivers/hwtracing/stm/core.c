@@ -403,11 +403,20 @@ static int stm_char_release(struct inode *inode, struct file *file)
 
 	stm_output_free(stm, &stmf->output);
 
+<<<<<<< HEAD
+=======
+	stm_output_free(stmf->stm, &stmf->output);
+
+>>>>>>> v4.4.178
 	/*
 	 * matches the stm_char_open()'s
 	 * class_find_device() + try_module_get()
 	 */
+<<<<<<< HEAD
 	stm_put_device(stm);
+=======
+	stm_put_device(stmf->stm);
+>>>>>>> v4.4.178
 	kfree(stmf);
 
 	return 0;
@@ -864,9 +873,15 @@ static int __stm_source_link_drop(struct stm_source_device *src,
 {
 	struct stm_device *link;
 	int ret = 0;
+<<<<<<< HEAD
 
 	lockdep_assert_held(&stm->link_mutex);
 
+=======
+
+	lockdep_assert_held(&stm->link_mutex);
+
+>>>>>>> v4.4.178
 	/* for stm::link_list modification, we hold both mutex and spinlock */
 	spin_lock(&stm->link_lock);
 	spin_lock(&src->link_lock);
@@ -892,6 +907,7 @@ unlock:
 	spin_unlock(&src->link_lock);
 	spin_unlock(&stm->link_lock);
 
+<<<<<<< HEAD
 	/*
 	 * Call the unlink callbacks for both source and stm, when we know
 	 * that we have actually performed the unlinking.
@@ -904,6 +920,10 @@ unlock:
 			stm->data->unlink(stm->data, src->output.master,
 					  src->output.channel);
 	}
+=======
+	if (!ret && src->data->unlink)
+		src->data->unlink(src->data);
+>>>>>>> v4.4.178
 
 	return ret;
 }
