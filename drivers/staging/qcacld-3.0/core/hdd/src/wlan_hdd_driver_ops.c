@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2015-2019 The Linux Foundation. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -1157,6 +1157,12 @@ static int wlan_hdd_pld_probe(struct device *dev,
 		return -EINVAL;
 	}
 
+	/*
+	 * If PLD_RECOVERY is received before probe then clear
+	 * CDS_DRIVER_STATE_RECOVERING.
+	 */
+	cds_set_recovery_in_progress(false);
+
 	return wlan_hdd_probe(dev, bdev, id, bus_type, false);
 }
 
@@ -1438,6 +1444,7 @@ static void wlan_hdd_pld_uevent(struct device *dev,
 	mutex_lock(&hdd_init_deinit_lock);
 	switch (uevent->uevent) {
 	case PLD_RECOVERY:
+		cds_set_target_ready(false);
 		hdd_pld_ipa_uc_shutdown_pipes();
 		wlan_hdd_purge_notifier();
 		break;
